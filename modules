@@ -9,9 +9,9 @@ if not hasattr(sys, "hexversion") or sys.hexversion < 0x20600f0:
     sys.exit(1)
 import json
 
-url     = 'http://modules.rc.fas.harvard.edu/api/1/avail/'
+url = 'http://modules.rc.fas.harvard.edu/api/1/avail/'
 content = urllib2.urlopen(url)
-avail   = json.load(content)
+avail = json.load(content)
 
 if avail['errors'] != 0:
     raise Exception
@@ -22,7 +22,7 @@ for module_name, module_data in sorted(avail['modules'].items()):
     except KeyError:
         whatis = "UNKNOWN"
     module_help = module_data['help']
-    updated     = ctime(module_data['modulefile_updated'])
+    updated = ctime(module_data['modulefile_updated'])
     print "module:", module_name
     print "whatis:", whatis.encode('utf-8')
     print "modulefile updated:", updated, "\n"
