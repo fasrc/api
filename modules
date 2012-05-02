@@ -14,7 +14,7 @@ content = urllib2.urlopen(url)
 avail = json.load(content)
 
 if avail['errors'] != 0:
-    raise Exception
+    raise Exception("Problem with API. Please try again later.")
 
 for module_name, module_data in sorted(avail['modules'].items()):
     try:
