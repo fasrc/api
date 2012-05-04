@@ -1,13 +1,31 @@
 #!/usr/bin/env python
-"""Query the fasrc modules API"""
+"""
+Query the fasrc modules API
+"""
+__version__ = "0.0.1"
+
 import urllib2
-from time import ctime
+import time
 import sys
 if not hasattr(sys, "hexversion") or sys.hexversion < 0x20600f0:
     sys.stderr.write("Python 2.6 or greater needed for ")
     sys.stderr.write("http://docs.python.org/library/json.html\n")
     sys.exit(1)
 import json
+import optparse
+
+parser = optparse.OptionParser(version=__version__, description=__doc__)
+parser.add_option("-s", "--short", action="store_true", dest="short",
+        help="show only the module name (default option)",
+        default="True")
+parser.add_option("-w", "--whatis", action="store_true", dest="whatis",
+        help="show whatis")
+parser.add_option("-u", "--updated", action="store_true", dest="updated",
+        help="show when modulefile was last updated")
+parser.add_option("--api-updated", action="store_true", dest="apiupdated",
+        help="show when API data was updated")
+
+options, args = parser.parse_args()
 
 url = 'http://modules.rc.fas.harvard.edu/api/1/avail/'
 content = urllib2.urlopen(url)
@@ -22,9 +40,16 @@ for module_name, module_data in sorted(avail['modules'].items()):
     except KeyError:
         whatis = "UNKNOWN"
     module_help = module_data['help']
-    updated = ctime(module_data['modulefile_updated'])
-    print "module:", module_name
-    print "whatis:", whatis.encode('utf-8')
-    print "modulefile updated:", updated, "\n"
+    updated = time.strftime("%Y-%m-%d",
+            time.localtime(module_data['modulefile_updated']))
+    if options.whatis:
+        print module_name, "-", whatis.encode('utf-8'), "\n"
+    elif options.updated:
+        print updated, module_name
+    elif options.short:
+        print module_name
+    else:
+        print module_name
 
-print "API data last updated", ctime(avail['updated'])
+if options.apiupdated:
+    print "API data last updated", time.ctime(avail['updated'])
